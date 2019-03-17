@@ -40,7 +40,7 @@ class GameBuilder {
   }
 
   //Build gameList based on the selected Platform
-  List<Game> buildPlatformList(){
+  List<Game> buildPlatformList() {
     
     List<Game> games = List<Game>();
 

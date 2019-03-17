@@ -1,6 +1,3 @@
-
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:gamestop_games/gamestop.dart';
@@ -21,21 +18,15 @@ class _GamesSplashScreenState extends State<GamesSplashScreen>{
   Widget build(BuildContext context) {
     GamesContainer();
     return new SplashScreen(
-      seconds: 2,
+      seconds: 3,
       navigateAfterSeconds: GamesApp(),
-      title: Text('GameStopChecker',
-        style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 30.0,
-            height: 2.5
-        ),
+      title: Text('GameStop Checker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0, height: 2.5),
       ),
-      image: Image(
-          image: AssetImage('images/web_hi_res_512.png')
-      ),
+      image: Image(image: AssetImage('images/web_hi_res_512.png')),
       backgroundColor: Colors.white,
       photoSize: 80.0,
       loaderColor: Colors.red,
+      loadingText: Text('Powered by offertevg.it')
     );
   }
 }
@@ -48,6 +39,7 @@ class GamesApp extends StatelessWidget {
       title: 'Gamestop Checker',
       theme: ThemeData(
         primarySwatch: Colors.red,
+        hintColor: Colors.white
       ),
       home: GamesHomePage(title: 'Gamestop Checker'),
     );
@@ -123,13 +115,11 @@ class _GamesHomePageState extends State<GamesHomePage> {
           children: tabs.map((Tab tab) {
             GamePlatform _platform = GamePlatform.values[GamePlatform.values
                 .indexWhere((elem) => elem.toString().contains(tab.text))];
-            List<Game> _games = _container.getByPlatform(_platform);
+            List<Game> _games = _filterGames(_container.getByPlatform(_platform));
             return RefreshIndicator(
                 child: ListView.builder(
-                  itemBuilder: (BuildContext context, int index) {
-                    if (_games != null && index < _games.length && (_searchtext.isEmpty || _games[index].title.toString().toLowerCase().contains(_searchtext.toLowerCase())))
-                      return _buildRow(_games[index], _platform);
-                  }
+                  itemCount: _games.length,
+                  itemBuilder: (BuildContext context, int index) => _buildRow(_games[index], _platform)
                 ),
               onRefresh: _populateContainer,
             );
@@ -178,30 +168,49 @@ class _GamesHomePageState extends State<GamesHomePage> {
     );
   }
 
-  _launchURL(String url) async {
+  void _launchURL(String url) async {
     if (await canLaunch(url))
       await launch(url);
     else
       throw 'Could not launch $url';
   }
 
-  _searchPressed(){
-    final String searchText = 'Cerca per';
+  void _searchPressed(){
+    final String searchText = 'Cerca...';
     setState(() {
       if (this._searchIcon.icon == Icons.search) {
-        this._searchIcon = new Icon(Icons.close);
-        this._appBarTitle = new TextField(
+        this._searchIcon = Icon(Icons.close);
+        this._appBarTitle = TextField(
           controller: _filter,
-          decoration: new InputDecoration(
-              prefixIcon: new Icon(Icons.search),
+          style: TextStyle(color: Colors.white),
+          decoration: InputDecoration(
+              prefixIcon: Icon(Icons.search, color: Colors.white),
               hintText: searchText
+
           ),
         );
       } else {
-        this._searchIcon = new Icon(Icons.search);
-        this._appBarTitle = new Text( widget.title );
+        this._searchIcon = Icon(Icons.search);
+        this._appBarTitle = Text( widget.title );
         _filter.clear();
       }
     });
+  }
+
+  List<Game> _filterGames(List<Game> list){
+
+    if(list == null)
+      return List<Game>();
+
+    if (_searchtext.isEmpty)
+      return list;
+
+    List<Game> games = List<Game>();
+
+    for(Game game in list){
+      if(game.title.toString().toLowerCase().contains(_searchtext.toLowerCase()))
+        games.add(game);
+    }
+    return games;
   }
 }
