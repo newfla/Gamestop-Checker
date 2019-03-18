@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:gamestop_games/gamestop.dart';
 import 'package:splashscreen/splashscreen.dart';
+import 'package:admob_flutter/admob_flutter.dart';
 
 
-void main() => runApp(MaterialApp(
-    home: GamesSplashScreen())
-);
+
+void main() {
+  Admob.initialize('adMob id here');
+  runApp(MaterialApp(home: GamesSplashScreen()));
+}
 
 class GamesSplashScreen extends StatefulWidget{
   @override
@@ -26,7 +29,7 @@ class _GamesSplashScreenState extends State<GamesSplashScreen>{
       backgroundColor: Colors.white,
       photoSize: 80.0,
       loaderColor: Colors.red,
-      loadingText: Text('Powered by offertevg.it')
+      loadingText: Text('Powered by OfferteVG.it')
     );
   }
 }
@@ -67,7 +70,10 @@ class _GamesHomePageState extends State<GamesHomePage> {
 
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Gamestop Checker');
-  String _searchtext='';
+  String _searchText='';
+  AdmobBanner _banner = AdmobBanner(
+    adUnitId: 'unitid here',
+    adSize: AdmobBannerSize.BANNER);
 
 
   final GamesContainer _container = GamesContainer();
@@ -82,11 +88,11 @@ class _GamesHomePageState extends State<GamesHomePage> {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
-          _searchtext = '';
+          _searchText = '';
         });
       } else {//if(_filter.text.length>2){
         setState(() {
-          _searchtext = _filter.text;
+          _searchText = _filter.text;
         });
       }
     });
@@ -111,20 +117,32 @@ class _GamesHomePageState extends State<GamesHomePage> {
             tabs: tabs,
           ),
         ),
-        body: TabBarView(
-          children: tabs.map((Tab tab) {
-            GamePlatform _platform = GamePlatform.values[GamePlatform.values
-                .indexWhere((elem) => elem.toString().contains(tab.text))];
-            List<Game> _games = _filterGames(_container.getByPlatform(_platform));
-            return RefreshIndicator(
-                child: ListView.builder(
-                  itemCount: _games.length,
-                  itemBuilder: (BuildContext context, int index) => _buildRow(_games[index], _platform)
-                ),
-              onRefresh: _populateContainer,
-            );
-          }).toList(),
-        ),
+        body:
+         Column(
+           mainAxisSize: MainAxisSize.max,
+           children: <Widget>[
+            Expanded(
+              child: TabBarView(
+                children: tabs.map((Tab tab) {
+                  GamePlatform _platform = GamePlatform.values[GamePlatform.values
+                      .indexWhere((elem) => elem.toString().contains(tab.text))];
+                  List<Game> _games = _filterGames(_container.getByPlatform(_platform));
+                  return RefreshIndicator(
+                    child: ListView.builder(
+                        itemCount: _games.length,
+                        itemBuilder: (BuildContext context, int index) => _buildRow(_games[index], _platform)
+                    ),
+                    onRefresh: _populateContainer,
+                  );
+                }).toList(),
+              ),
+            ),
+             Container(
+               child: _banner
+             )
+          ],
+         )
+
       ),
     );
   }
@@ -202,13 +220,13 @@ class _GamesHomePageState extends State<GamesHomePage> {
     if(list == null)
       return List<Game>();
 
-    if (_searchtext.isEmpty)
+    if (_searchText.isEmpty)
       return list;
 
     List<Game> games = List<Game>();
 
     for(Game game in list){
-      if(game.title.toString().toLowerCase().contains(_searchtext.toLowerCase()))
+      if(game.title.toString().toLowerCase().contains(_searchText.toLowerCase()))
         games.add(game);
     }
     return games;

@@ -10,6 +10,9 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="Gamestop Checker"
         android:icon="@mipmap/ic_launcher">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-6385068958145369~7988243765"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

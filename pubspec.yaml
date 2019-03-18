@@ -17,9 +17,10 @@ environment:
   sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
-  html: ^0.13.4
-  url_launcher: ^5.0.2
+  html:
+  url_launcher:
   splashscreen:
+  admob_flutter: ^0.1.2
   flutter:
     sdk: flutter
 
