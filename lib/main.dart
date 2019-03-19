@@ -68,9 +68,12 @@ class _GamesHomePageState extends State<GamesHomePage> {
 
   final TextEditingController _filter = new TextEditingController();
 
-  Icon _searchIcon = new Icon(Icons.search);
-  Widget _appBarTitle = new Text('Gamestop Checker');
+  Icon _searchIcon = Icon(Icons.search);
+  Icon _arrowIcon = Icon(Icons.arrow_upward);
+  Widget _appBarTitle = Text('Gamestop Checker');
   String _searchText='';
+  String _selectedView = 'Nome';
+  bool _asc = true;
   AdmobBanner _banner = AdmobBanner(
     adUnitId: 'unitid here',
     adSize: AdmobBannerSize.BANNER);
@@ -111,7 +114,32 @@ class _GamesHomePageState extends State<GamesHomePage> {
             IconButton(
               icon: _searchIcon,
               onPressed: ()=> _searchPressed()
-            )
+            ),
+            IconButton(
+              icon: _arrowIcon,
+              onPressed: () => _arrowPressed(),
+            ),
+            PopupMenuButton(
+              icon: Icon(Icons.sort),
+              onSelected: (value) => setState(() => _selectedView = value),
+              itemBuilder: (_) => [
+                CheckedPopupMenuItem(
+                  checked: _selectedView == 'Nome',
+                  value: 'Nome',
+                  child: const Text('Nome'),
+                ),
+                CheckedPopupMenuItem(
+                  checked: _selectedView == 'Prezzo Nuovo',
+                  value: 'Prezzo Nuovo',
+                  child: const Text('Prezzo Nuovo'),
+                ),
+                CheckedPopupMenuItem(
+                  checked: _selectedView == 'Prezzo Usato',
+                  value: 'Prezzo Usato',
+                  child: const Text('Prezzo Usato'),
+                ),
+              ],
+            ),
           ],
           bottom: TabBar(
             tabs: tabs,
@@ -152,7 +180,6 @@ class _GamesHomePageState extends State<GamesHomePage> {
     buffer.write("Prezzo nuovo: ");
     buffer.write(game.priceNew);
     if (game.priceUsed
-        .toString()
         .length > 1) {
       buffer.write(" Prezzo usato: ");
       buffer.write(game.priceUsed);
@@ -215,10 +242,22 @@ class _GamesHomePageState extends State<GamesHomePage> {
     });
   }
 
+  void _arrowPressed(){
+    setState(() {
+      _asc = !_asc;
+      _asc ? _arrowIcon = Icon(Icons.arrow_upward) :_arrowIcon = Icon(Icons.arrow_downward);
+    });
+  }
+
   List<Game> _filterGames(List<Game> list){
 
     if(list == null)
       return List<Game>();
+
+    _sortGames(list);
+
+    if(!_asc)
+      list = list.reversed.toList();
 
     if (_searchText.isEmpty)
       return list;
@@ -230,5 +269,64 @@ class _GamesHomePageState extends State<GamesHomePage> {
         games.add(game);
     }
     return games;
+  }
+
+  void _sortGames(List<Game> list){
+    switch(_selectedView){
+      case 'Nome':
+        list.sort((a,b) => a.title.compareTo(b.title));
+        break;
+
+      case 'Prezzo Nuovo':
+        list.sort((a,b){
+          return _comparator(a, b, true);
+        });
+        break;
+
+      case 'Prezzo Usato':
+        list.sort((a,b){
+          return _comparator(a, b, false);
+        });
+        break;
+
+    }
+  }
+
+  int _comparator(Game a, Game b, bool newer){
+    String priceA;
+    String priceB;
+    double doubleA,doubleB;
+    int res;
+
+    if(newer){
+      priceA = a.priceNew;
+      priceB = b. priceNew;
+    }
+    else{
+      priceA = a.priceUsed;
+      priceB = b. priceUsed;
+    }
+
+    if(priceA.isEmpty && priceB.isEmpty)
+      return a.title.compareTo(b.title);
+    if(priceA.isEmpty)
+      return 1;
+    else if(priceB.isEmpty)
+      return -1;
+
+    try{
+      doubleA = double.parse(priceA.substring(0,priceA.length-1).replaceFirst(",", ""));
+    }catch(e){return 1;}
+
+    try{
+      doubleB = double.parse(priceB.substring(0,priceB.length-1).replaceFirst(",", ""));
+    }catch(e){return -1;}
+
+    res = doubleA.compareTo(doubleB);
+
+    if(res == 0)
+      res = a.title.compareTo(b.title);
+
+    return res;
   }
 }

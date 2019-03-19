@@ -12,6 +12,7 @@ class Game {
 
   //Constructor
   Game(this._title, this._platform, this._priceNew, this._priceUsed, this._url);
+
 }
 
   //Enum Game Platoform

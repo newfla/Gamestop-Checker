@@ -18,6 +18,7 @@ class GamesContainer {
   //Getter methods
   List<Game> getByPlatform(GamePlatform platform) => _mapPlatformGames[platform];
 
+
   List<Game> getAll(){
     List<Game> games = List<Game>();
 
