@@ -46,13 +46,13 @@ class GameBuilder {
 
     for (Element element in _table.getElementsByTagName("li")) {
 
-      if(checkStringType(element.getElementsByTagName("span")[0].innerHtml)){
+      if(checkStringType(element.getElementsByTagName("span")[0].innerHtml) && !element.getElementsByTagName("p")[0].innerHtml.contains('zione')){
 
         String name = extractGameName(element.getElementsByTagName("h2")[0].innerHtml);
         String url = extractURL(element.getElementsByTagName("a")[0]);
         List<String> prices = extractPrices(element.getElementsByTagName("p")[0].innerHtml);
 
-        games.add( Game(name, _platform, prices[0], prices[1], url));
+        games.add(Game(name, _platform, prices[0], prices[1], url));
       }
     }
     return games;
