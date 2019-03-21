@@ -21,9 +21,9 @@ class _GamesSplashScreenState extends State<GamesSplashScreen>{
   Widget build(BuildContext context) {
     GamesContainer();
     return new SplashScreen(
-      seconds: 3,
+      seconds: 20,
       navigateAfterSeconds: GamesApp(),
-      title: Text('GameStop Checker', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0, height: 2.5),
+      title: Text('Controllo Validità GS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0, height: 2.5),
       ),
       image: Image(image: AssetImage('images/web_hi_res_512.png')),
       backgroundColor: Colors.white,
@@ -39,12 +39,12 @@ class GamesApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Gamestop Checker',
+      title: 'Controllo Validità ',
       theme: ThemeData(
         primarySwatch: Colors.red,
         hintColor: Colors.white
       ),
-      home: GamesHomePage(title: 'Gamestop Checker'),
+      home: GamesHomePage(title: 'Controllo Validità '),
     );
   }
 }
@@ -70,12 +70,12 @@ class _GamesHomePageState extends State<GamesHomePage> {
 
   Icon _searchIcon = Icon(Icons.search);
   Icon _arrowIcon = Icon(Icons.arrow_upward);
-  Widget _appBarTitle = Text('Gamestop Checker');
+  Widget _appBarTitle = Text('Controllo Validità ');
   String _searchText='';
   String _selectedView = 'Nome';
   bool _asc = true;
   AdmobBanner _banner = AdmobBanner(
-    adUnitId: 'unitid here',
+    adUnitId: 'adUnit here',
     adSize: AdmobBannerSize.BANNER);
 
 
