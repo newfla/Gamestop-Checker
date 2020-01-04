@@ -20,17 +20,25 @@ class _GamesSplashScreenState extends State<GamesSplashScreen>{
   @override
   Widget build(BuildContext context) {
     GamesContainer();
+    Color colore = Colors.white;
+    Color coloreScritta = Colors.black;
+    if (MediaQuery.of(context).platformBrightness == Brightness.dark){
+      colore = Colors.black87;
+      coloreScritta = Colors.white;
+    }
     return new SplashScreen(
-      seconds: 20,
+      seconds: 2,
       navigateAfterSeconds: GamesApp(),
-      title: Text('Controllo Validità GS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0, height: 2.5),
+      title: Text('Controllo Validità GS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0, height: 2.5, color: coloreScritta),
       ),
       image: Image(image: AssetImage('images/web_hi_res_512.png')),
-      backgroundColor: Colors.white,
+
+      backgroundColor: colore,
       photoSize: 80.0,
       loaderColor: Colors.red,
-      loadingText: Text('Powered by OfferteVG.it')
+      loadingText: Text('Powered by OfferteVG.it', style: TextStyle(color: coloreScritta))
     );
+
   }
 }
 
@@ -43,6 +51,9 @@ class GamesApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.red,
         hintColor: Colors.white
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
       ),
       home: GamesHomePage(title: 'Controllo Validità '),
     );
